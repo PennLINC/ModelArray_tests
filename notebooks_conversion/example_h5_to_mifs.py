@@ -1,3 +1,6 @@
+# This is outdated, as it uses function h5_to_mifs(); current users should use h5_to_fixels(), or CLI command fixelstats_write
+
+
 import sys
 import os
 #sys.path.insert(0,'../confixel/')
