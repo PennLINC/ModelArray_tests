@@ -70,3 +70,14 @@ t$source_mask_file <- "n1601_NbackCoverageMask_20170427.nii.gz"   # there is no 
 
 # save updated t:
 write.table(t, file=fn.csv.updated, sep=",", row.names=FALSE, col.names=TRUE, quote = FALSE)  
+
+### compare with existing file from Kristin #####
+t <- read.csv(fn.csv.updated)
+
+fn.kristin.filelist <- file.path(folder, "revision","2b0bcontrast_list.csv")
+kristin.filelist <- read.table(fn.kristin.filelist)
+kristin.filelist <- kristin.filelist$V1
+kristin.filelist <- gsub("/cbica/projects/Kristin_CBF/nback_adversity/", "", 
+                         kristin.filelist)     
+expect_equal(t$source_file,
+             kristin.filelist)
