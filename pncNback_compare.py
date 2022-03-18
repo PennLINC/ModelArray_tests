@@ -20,7 +20,7 @@ def load_img(fn, group_mask_matrix):
 
 folder_main = "/home/chenying/Desktop/fixel_project/data/data_voxel_kristin_nback"
 folder_modelarray = op.join(folder_main, "pncNback_nvoxels-0_wResults_20220317-162937")
-folder_fsl = op.join(folder_main, "revision_output")
+folder_fsl = op.join(folder_main, "revision_flameo_ols++")
 
 group_mask_fn = op.join(folder_main, "n1601_NbackCoverageMask_20170427.nii.gz")
 group_mask_img = nb.load(group_mask_fn)
@@ -43,7 +43,11 @@ estimate_parentEd_fsl = load_img(estimate_parentEd_fsl_fn, group_mask_matrix)
 # tstat_envSES_modelarray_fn = op.join(folder_modelarray, "lm_fullOutputs_envSES.statistic.nii.gz")
 # tstat_envSES_modelarray_fn = nb.load(tstat_envSES_modelarray_fn)
 
+diffabsmax = max(abs(tstat_parentEd_modelarray - tstat_parentEd_fsl))
+print(diffabsmax)
 
+diffabsmax = max(abs(estimate_parentEd_modelarray - estimate_parentEd_fsl))
+print(diffabsmax)
 
 # r = pearsonr(tstat_parentEd_modelarray, 
 #         tstat_parentEd_fsl)
