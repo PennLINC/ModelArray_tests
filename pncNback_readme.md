@@ -22,7 +22,7 @@
 
 * code:
     * pncNback_call_modelarrayR.sh
-    * pncNback_run_modelarray.R
+    * pncNback_run_modelarray.R    # make sure to change the input h5 filename (filename_orig_h5)!
 * ModelArray version: PennLINC/ModelArray@9e735b9
 * run on Chenying's local computer vmware
 * linear model: contrast ~ ageAtScan1 + sex + nbackRelMeanRMSMotion + parental_ed + envSES
@@ -30,6 +30,7 @@
 * number of voxels = 151,227
 * number of CPU requested = 4
 * took ~1h (other applications were running too)
+* output filename: pncNback_nvoxels-0_wResults_20220317-162937.h5
 
 
 ## ConVoxel: .h5 stat results --> .nii.gz
@@ -50,10 +51,32 @@
 * where is the data: CUBIC fixel_db project: /cbica/projects/fixel_db/data/data_voxel_kristin_nback
     * output data are in folder `revision_flameo_ols++`
 
-## Compare to FSL:
+## Compare to ground truth FSL:
 
 * code: pncNback_compare.py
 * run on Chenying's local computer vmware
 
 
+## Use singularity image to replicate the results
+* singularity image: chenyingzhao/modelarray_confixel:test0.0.0
+* where: CUBIC fixel_db project
+* output files are in folder: /cbica/projects/fixel_db/data/data_voxel_kristin_nback/
+### ConVoxel: .nii.gz --> .h5
+* code: pncNback_singularity_convoxel_to_h5.sh
+* output h5 file: pncNback_bySingularity.h5
+* where: cubic-sattertt interactive node
+* Depending on the performance of interactive node, took about 3min or about 7min, including launch time of singularity image
 
+### ModelArray linear regression
+* code: 
+    * qsub to cubic compute node: pncNback_qsub_call_modelarrayR.sh
+    * bash file to call R script:   pncNback_call_modelarrayR.sh
+    * R code: pncNback_run_modelarray.R   # make sure to change the input h5 filename (filename_orig_h5)!
+* where: cubic compute node
+* note: 
+    * The singularity command generated in `pncNback_call_modelarrayR.sh` can be on interactive node of cubic-sattertt (at least for first 10 elements; did not test full run of all elements).
+    * Memory requirement may be able to reduced and smaller than the one in pncNback_qsub_call_modelarrayR.sh: h_vmem=30G # this value is pending verified after running all elements on 2022.3.25 on cubic compute node
+
+### ConVoxel: .h5 stat results --> .nii.gz
+
+### Comparison with ground truth FSL:

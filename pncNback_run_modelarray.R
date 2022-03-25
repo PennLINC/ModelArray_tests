@@ -24,6 +24,9 @@ analysis_name <- "lm_fullOutputs"    # the name for the statistical results data
 # installation of ModelArray R pacakge:
 branch_name_modelarray <- "main"    # ++++++++++++++
 install_modelarray_force <- TRUE # +++++++
+
+# filename_orig_h5 <- "pncNback_orig.h5"  # if running in R studio +++++++++++++++
+filename_orig_h5 <- "pncNback_bySingularity.h5"   # if running singularity image of ModelArray
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 ### install (if needed) and load pacakges #####
@@ -52,7 +55,7 @@ package_info()
 
 
 ### files #####
-fn.h5.orig <- file.path(folder.main, "pncNback_orig.h5")
+fn.h5.orig <- file.path(folder.main, filename_orig_h5)
 
 fn.h5.output <- file.path(folder.main,
                           paste0(filename_output_body,".h5"))
