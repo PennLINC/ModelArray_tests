@@ -72,10 +72,13 @@
     * qsub to cubic compute node: pncNback_qsub_call_modelarrayR.sh
     * bash file to call R script:   pncNback_call_modelarrayR.sh
     * R code: pncNback_run_modelarray.R   # make sure to change the input h5 filename (filename_orig_h5)!
-* where: cubic compute node
+* run where: cubic compute node
 * note: 
     * The singularity command generated in `pncNback_call_modelarrayR.sh` can be on interactive node of cubic-sattertt (at least for first 10 elements; did not test full run of all elements).
-    * Memory requirement may be able to reduced and smaller than the one in pncNback_qsub_call_modelarrayR.sh: h_vmem=30G # this value is pending verified after running all elements on 2022.3.25 on cubic compute node
+    * Memory requirement may be able to reduced and smaller than the one in pncNback_qsub_call_modelarrayR.sh: h_vmem=30G (full run was successful with this amount of memory)
+* output file: 
+    * pncNback_nvoxels-0_wResults_20220325-183056.h5
+* took 2h51min on cubic compute node, with 4 CPUs requested
 
 ### ConVoxel: .h5 stat results --> .nii.gz
 
