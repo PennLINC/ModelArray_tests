@@ -59,6 +59,12 @@
 
 ## Use singularity image to replicate the results
 * singularity image: chenyingzhao/modelarray_confixel:test0.0.0
+* how to set it up: pull it from DockerHub by: 
+    * $ singularity pull docker://chenyingzhao/modelarray_confixel:test0.0.0
+    * where to run this command: e.g. the root directory of cubic project folder
+    * After this is done, there should be a .sif file named "modelarray_confixel_test0.0.0.sif" 
+
+For the following steps:
 * where: CUBIC fixel_db project
 * output files are in folder: /cbica/projects/fixel_db/data/data_voxel_kristin_nback/
 ### ConVoxel: .nii.gz --> .h5
