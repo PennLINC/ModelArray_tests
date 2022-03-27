@@ -81,5 +81,17 @@
 * took 2h51min on cubic compute node, with 4 CPUs requested
 
 ### ConVoxel: .h5 stat results --> .nii.gz
+* code: pncNback_singularity_convoxel_to_volume.sh
+* run where: cubic-sattertt interactive node
+* took several minutes (about 3min-5min)
+* output file: pncNback_nvoxels-0_wResults_20220325-183056/*
+
 
 ### Comparison with ground truth FSL:
+* code: pncNback_compare.py
+* note: remember to change the variables folder_main and folder_modelarray
+* compared matched stats for parentEdu:
+    * tstat max abs diff = 5.367881747986303e-07
+    * beta estimation max abs diff = 3.455002861585399e-07
+* also visually compared for envSES (tstat and beta estimation) - consistent in several random sampled voxels at least to 4th decimal digits
+* Therefore, using singularity image of ModelArray + ConFixel did replicate the results from FSL.

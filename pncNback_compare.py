@@ -18,8 +18,10 @@ def load_img(fn, group_mask_matrix):
     return flattened_inmask
 
 
-folder_main = "/home/chenying/Desktop/fixel_project/data/data_voxel_kristin_nback"
-folder_modelarray = op.join(folder_main, "pncNback_nvoxels-0_wResults_20220317-162937")
+# folder_main = "/home/chenying/Desktop/fixel_project/data/data_voxel_kristin_nback"  # local vmware
+folder_main = "/cbica/projects/fixel_db/data/data_voxel_kristin_nback"  # cubic
+#folder_modelarray = op.join(folder_main, "pncNback_nvoxels-0_wResults_20220317-162937")  # local vmware
+folder_modelarray = op.join(folder_main, "pncNback_nvoxels-0_wResults_20220325-183056")   # used singularity image to compute
 folder_fsl = op.join(folder_main, "revision_flameo_ols++")
 
 group_mask_fn = op.join(folder_main, "n1601_NbackCoverageMask_20170427.nii.gz")
