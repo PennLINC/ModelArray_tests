@@ -19,7 +19,7 @@ test_that("partial R squared calculation works as expected", {
     This is shown in case 1.
   "
   
-  source("utils.R")
+  source("utils.R")    # in ModelArray_paper repo - TODO: change relative path!
   ### set up: make random data #####
   set.seed(5)
   nsubj = 10
