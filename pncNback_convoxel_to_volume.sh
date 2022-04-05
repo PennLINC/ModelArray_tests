@@ -1,4 +1,7 @@
 # TO SETUP:
+
+# conda activate test_confixel   # <- only do this when running on Chenying's local vmware!
+
 # git clone <repo>
 # cd ConFixel
 # pip install -e .
