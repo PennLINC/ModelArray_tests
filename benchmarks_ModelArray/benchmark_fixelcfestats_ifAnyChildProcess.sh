@@ -2,7 +2,7 @@
 
 # this script is modified upon ModelArray_paper/benchmarks/benchmark_fixelcfestats.sh
 # changed -c 1 to -c 2 to test if there is any child processes
-# also change the path to myMemoryProfiler.sh
+# also using modified myMemoryProfiler_fortests.sh
 
 while getopts S:h:t:f:F:n:o:M:s:w: flag
 do
@@ -79,8 +79,8 @@ if [[ "$run_memoryProfiler" == "TRUE"  ]]; then
     # for MRtrix's fixelcfestats: there will only one process (no child processes) with n_cores*100% usage of CPU --> c=1
 	#bash myMemoryProfiler.sh -P ${parent_id} -c 1 -s ${sample_sec} -o ${folder_output} > ${fn_myMemProf} 2>&1
 
-    # BELOW: TEST IF THERE IS ANY CHILD PROCESS - I changed "-c 1" to "-c 2"
-    bash ../../ModelArray_paper/benchmarks/myMemoryProfiler.sh -P ${parent_id} -c 2 -s ${sample_sec} -o ${folder_output} > ${fn_myMemProf} 2>&1
+    # BELOW: TEST IF THERE IS ANY CHILD PROCESS - I modified myMemoryProfiler_fortests.sh so for any -c, it will always detect child process
+    bash myMemoryProfiler_fortests.sh -P ${parent_id} -c 1 -s ${sample_sec} -o ${folder_output} > ${fn_myMemProf} 2>&1
 
 else
 	echo "not to call myMemoryProfiler.sh to profile memory"

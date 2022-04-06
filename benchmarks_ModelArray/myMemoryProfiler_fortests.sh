@@ -1,6 +1,6 @@
 #!/bin/bash
 # This bash is to profile memory usage of a process and its child(ren)
-
+# This is copied from ModelArray_paper/benchmarks, and MODIFIED!
 
 while getopts P:c:s:o: flag
 do
@@ -57,7 +57,8 @@ do
 done
 echo "fn for all child(ren)'s process(es): ${fn_child_list[@]}"
 
-if [[ "${num_cores}" -gt 1  ]]; then     # more than one cores requested
+# MODIFIED: ALSO TRY TO DETECT CHILD PROCESS EVEN IF NUM_CORES=1
+#if [[ "${num_cores}" -gt 1  ]]; then     # more than one cores requested
     while :    # while TRUE until find all children's ids:
     do
         child_id_list_wn=`pgrep -P ${parent_id}`
@@ -65,7 +66,7 @@ if [[ "${num_cores}" -gt 1  ]]; then     # more than one cores requested
         readarray -t child_id_list <<<"$child_id_list_wn"    # remove "\n"
 
         
-        if [  ${#child_id_list[@]} -eq ${num_cores} ]; then    # if length matches number of requested cores
+        if [ ((${#child_id_list[@]})) ] && [ ${#child_id_list[@]} -eq ${num_cores} ]; then    # if the array is not empty && if length matches number of requested cores
             
             echo "found all child(ren)'s id(s): ${child_id_list[@]}"
             # echo "child id list - all: ${child_id_list[@]}"
@@ -92,4 +93,4 @@ if [[ "${num_cores}" -gt 1  ]]; then     # more than one cores requested
     
     #echo "pid for wss of parent after multiple cores start: ${pid_wss_parent_multicore}"
     #echo "pid(s) for all wss of child processes: ${pid_wss_child_list[@]}"
-fi
+#fi
