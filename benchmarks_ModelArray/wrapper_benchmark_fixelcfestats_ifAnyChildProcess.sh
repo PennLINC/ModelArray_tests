@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# THIS IS COPIED FROM ModelArray_paper repo with history; however it calls "benchmark_fixelcfestats_ifAnyChildProcess.sh"
+
+
 # examples:
 # bash wrapper_benchmark_fixelcfestats.sh -S 938 -h 100 -t 2 -f TRUE -F FALSE -n FALSE -w vmware -M TRUE -s 0.1
 # bash wrapper_benchmark_fixelcfestats.sh -S 938 -h 100 -t 1 -f TRUE -F FALSE -n TRUE -w interactive -M TRUE -s 1
@@ -73,4 +76,4 @@ fn_output_txt="${folder_output}/output.txt"
 
 
 
-bash benchmark_fixelcfestats.sh -S $num_subj -h $nshuffles -t $nthreads -f $ftests -F $fonly -n $notest -o $folder_output -M ${run_memoryProfiler} -s ${sample_sec} -w ${run_where} > $fn_output_txt 2>&1 &
+bash benchmark_fixelcfestats_ifAnyChildProcess.sh -S $num_subj -h $nshuffles -t $nthreads -f $ftests -F $fonly -n $notest -o $folder_output -M ${run_memoryProfiler} -s ${sample_sec} -w ${run_where} > $fn_output_txt 2>&1 &
