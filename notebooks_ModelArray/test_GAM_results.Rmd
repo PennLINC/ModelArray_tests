@@ -1,0 +1,56 @@
+---
+title: "test for GAM results"
+output: html_document
+---
+
+This is to test that the results from applying GAM on PNC dataset is as expected.
+Seems like REML and GCV.Cp would have very similar results (though do have a little bit diff).... Please pay attention to stats of s(Age) in onemodel.tidy.smoothTerms
+
+## REML has been passed in
+```{r}
+rm(list=ls())
+library(ModelArray)
+library(testthat)
+```
+
+```{r}
+num.subj <- 938
+i_element <- 3
+
+gam.method = "REML"   # "GCV.Cp", "REML"  # any other methods usually used?
+formula <- FDC ~ s(Age, k=4, fx = TRUE) + sex + dti64MeanRelRMS 
+
+```
+
+```{r}
+fn <- paste0("../../data/data_from_josiane/ltn_FDC_n", toString(num.subj), ".h5")
+fn_csv <- paste0("../../data/data_from_josiane/df_example_n", toString(num.subj), ".csv")
+
+scalar <- c("FDC")
+phenotypes <- read.csv(fn_csv)
+
+modelarray <- ModelArray(fn, scalar_types = scalar)
+
+
+```
+
+```{r}
+values <- scalars(modelarray)[[scalar]][i_element,]
+dat <- phenotypes
+dat[[scalar]] <- values
+  
+onemodel <- mgcv::gam(formula, data = dat, method = gam.method)
+onemodel.tidy.smoothTerms <- onemodel %>% broom::tidy(parametric = FALSE)
+onemodel.tidy.parametricTerms <- onemodel %>% broom::tidy(parametric = TRUE)
+onemodel.glance <- onemodel %>% broom::glance()
+onemodel.summary <- onemodel %>% summary()
+# add additional model's stat to onemodel.glance():
+onemodel.glance[["adj.r.squared"]] <- onemodel.summary$r.sq
+onemodel.glance[["dev.expl"]] <- onemodel.summary$dev.expl
+
+onemodel.tidy.smoothTerms  # <== little diff appears here if using GCV.Cp!
+onemodel.tidy.parametricTerms
+onemodel.glance
+onemodel.summary
+
+```
