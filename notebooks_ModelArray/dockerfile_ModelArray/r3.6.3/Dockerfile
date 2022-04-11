@@ -1,6 +1,7 @@
 # This is to build Docker image for a specific R version, so that we can test the installation of ModelArray
 ## Base image https://hub.docker.com/u/rocker/
-FROM rocker/verse:3.6.3
+#FROM rocker/verse:3.6.3     # <- already include some R packages!
+FROM rocker/r-ver:3.6.3
 
 ## Install libraries in linux system:
 # ref: .circleci/config.yml from ModelArray:
