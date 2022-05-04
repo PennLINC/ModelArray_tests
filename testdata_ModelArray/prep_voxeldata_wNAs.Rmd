@@ -12,10 +12,11 @@ library(ModelArray)
 library(rhdf5)
 library(hdf5r)
 library(testthat)
+set.seed(5)
 ```
 
 ```{r create h5}
-nsubj <- 40    # 40, 60 (because 50*relative_thr = 50*20% = 10 = absolute_thr)
+nsubj <- 60    # 40, 60 (because 50*relative_thr = 50*20% = 10 = absolute_thr)
 nvoxels <- 100
 dim <- c(10,10,10)
 scalar_name <- "FA"
@@ -30,7 +31,7 @@ num.subj.lthr.rel <- 0.2
 folder.h5 <- "/home/chenying/Desktop/fixel_project/data/data_forCircleCI_voxeldata_wNAs"
 fn.h5 <- file.path(folder.h5, 
                    paste0("n", toString(nsubj), "_voxels.h5"))
-
+fn.csv <- gsub(".h5", ".csv", fn.h5)
 
 ```
 
@@ -46,6 +47,17 @@ for (i in 1:length(list.num.valid.subj)) {
   }
 }
 list.results
+```
+
+```{r create companion csv file}
+list.age <- runif(nsubj, min = 10, max = 20)
+df.csv <- data.frame(subjid =  paste("subj", as.character(1:nsubj), sep=""),
+                     age = list.age, 
+                     sex = sample(1:2, nsubj, replace = TRUE),   # integer 1 or 2
+                     factorA = list.age + runif(nsubj, min = -1, max = 1),   # correlated with age
+                     source_file = paste("FA/subj", as.character(1:nsubj), ".nii.gz", sep=""),
+                     source_mask_file = paste("FA/subj", as.character(1:nsubj), "_mask.nii.gz", sep=""))
+write.table(df.csv, file=fn.csv, sep=",", row.names=FALSE, col.names=TRUE, quote = FALSE)  
 ```
 
 ```{r create the h5 file}
