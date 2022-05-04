@@ -16,37 +16,56 @@ set.seed(5)
 ```
 
 ```{r create h5}
-nsubj <- 60    # 40, 60 (because 50*relative_thr = 50*20% = 10 = absolute_thr)
+nsubj <- 60    # 30 (for all NAs!!!), 40, 60 (because 50*relative_thr = 50*20% = 10 = absolute_thr)
 nvoxels <- 100
 dim <- c(10,10,10)
 scalar_name <- "FA"
 
-list.num.valid.subj <- c(0, 0.3*nsubj, 0.2*nsubj, 0.1*nsubj,
-                            12, 10, 8)
+if (nsubj == 30) {
+  list.num.valid.subj <- rep(0, nvoxels)
+} else {
+  list.num.valid.subj <- c(rep(0, 10),  # first 10 voxels: NaNs
+                         c(0.3*nsubj, 0.2*nsubj, 0.1*nsubj,
+                            12, 10, 8),
+                         rep(nsubj, 4),    # #11-20: for testing
+                         rep(nsubj, 30-1),   # #21-49: good
+                         rep(0, 11),    # #50-60: NaNs
+                         rep(nsubj, 40))   # rest: good
+}
+
+expect_equal(length(list.num.valid.subj),
+             nvoxels)
 
 num.subj.lthr.abs <- 10
 num.subj.lthr.rel <- 0.2
 
 # the h5 file to create
 folder.h5 <- "/home/chenying/Desktop/fixel_project/data/data_forCircleCI_voxeldata_wNAs"
-fn.h5 <- file.path(folder.h5, 
+if (nsubj==30) {
+  fn.h5 <- file.path(folder.h5, 
+                   paste0("n", toString(nsubj), "_voxels_allInvalidValues.h5"))
+} else {
+  fn.h5 <- file.path(folder.h5, 
                    paste0("n", toString(nsubj), "_voxels.h5"))
+}
+
 fn.csv <- gsub(".h5", ".csv", fn.h5)
 
 ```
 
 ```{r expect test results}
 # whether there are sufficient subjects; if so = 1, if not = NA
-list.results <- rep(0, length(list.num.valid.subj))
+list.index.voxel.insufficient <- c()
 for (i in 1:length(list.num.valid.subj)) {
   num.valid.subjects <- list.num.valid.subj[i]
   if ((num.valid.subjects > num.subj.lthr.abs) & (num.valid.subjects > num.subj.lthr.rel * nsubj)) {   # both are "greater than" ">"
-    list.results[i] = 1
+    
   } else {
-    list.results[i] = NA
+    list.index.voxel.insufficient <- c(list.index.voxel.insufficient,
+                                       i)
   }
 }
-list.results
+list.index.voxel.insufficient
 ```
 
 ```{r create companion csv file}
@@ -87,17 +106,29 @@ for (i in 1:length(list.num.valid.subj)) {
 }
 
 # generate scalar_mat based on list.num.valid.subj (for first several voxels):
-scalar_mat <- rep(NaN, nsubj)   # all NAs
-for (i in 2:length(list.num.valid.subj)) {
-  toadd <- c(runif(list.num.valid.subj[i]),     # random number between 0-1, #=listed in the list
-             rep(NA,  (nsubj - list.num.valid.subj[i])  ))    # the rest = NA
-  scalar_mat <- rbind(scalar_mat, toadd)
+scalar_mat <- matrix(rep(0, nvoxels * nsubj),
+                     nrow = nvoxels,
+                     ncol = nsubj)
+for (i in 1:length(list.num.valid.subj)) {
+  num.valid.subj <- list.num.valid.subj[i]
+  if (num.valid.subj == 0) {
+    if (i%%3 == 0) {    # if the row number (i.e. voxel id) is 3 times x
+      toadd <- rep(Inf, nsubj)
+    } else if (i%%3 == 1) {
+      toadd <- rep(NaN, nsubj)    # this is possible with ConVoxel
+    } else if (i%%3 == 2) {
+      toadd <- rep(NA, nsubj)    # note: is.finite(NA) = FALSE (find, that's how ModelArray runs); but is.nan(NA) is FALSE too!!! i.e. NA isn't considered as NaN in R!!
+    }
+    
+  } else {
+    toadd <- c(runif(num.valid.subj),     # random number between 0-1, #=listed in the list
+             rep(NaN,  (nsubj - num.valid.subj)  ))    # the rest = NaN
+  }
+  
+  rownames(toadd) <- NULL
+  scalar_mat[i, ] <- toadd
+  
 }
-rownames(scalar_mat) <- NULL
-
-temp <- nvoxels - length(list.num.valid.subj)   # rest of the voxels: all valid
-toadd <- matrix(runif( temp  * nsubj  ), nrow=temp)
-scalar_mat <- rbind(scalar_mat, toadd)
 rownames(scalar_mat) <- NULL
 
 thescalar.grp[["values"]] <- scalar_mat
