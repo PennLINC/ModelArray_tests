@@ -50,22 +50,29 @@ if (nsubj==30) {
 }
 
 fn.csv <- gsub(".h5", ".csv", fn.h5)
+fn.expectedResults <- gsub(".h5", "_expectedResults.txt", fn.h5)
 
 ```
 
 ```{r expect test results}
 # whether there are sufficient subjects; if so = 1, if not = NA
 list.index.voxel.insufficient <- c()
+list.results <- rep(NULL, nvoxels)
 for (i in 1:length(list.num.valid.subj)) {
   num.valid.subjects <- list.num.valid.subj[i]
   if ((num.valid.subjects > num.subj.lthr.abs) & (num.valid.subjects > num.subj.lthr.rel * nsubj)) {   # both are "greater than" ">"
-    
+    list.results[i] <- 1
   } else {
     list.index.voxel.insufficient <- c(list.index.voxel.insufficient,
                                        i)
+    list.results[i] <- 0
   }
 }
 list.index.voxel.insufficient
+# save list.results:
+list.results <- data.frame(flag_sufficient_subj = list.results)
+write.table(list.results, file=fn.expectedResults, sep=",", row.names=FALSE, col.names=TRUE, quote = FALSE)  
+
 ```
 
 ```{r create companion csv file}
@@ -81,7 +88,7 @@ write.table(df.csv, file=fn.csv, sep=",", row.names=FALSE, col.names=TRUE, quote
 
 ```{r create the h5 file}
 if (file.exists(fn.h5)) {
-  unlink(fn.h5)   # remove existing one
+  file.remove(fn.h5)   # remove existing one
 }
 h5 <- hdf5r::H5File$new(fn.h5, mode="a")
 ```
@@ -135,7 +142,7 @@ thescalar.grp[["values"]] <- scalar_mat
 
 
 # add source filenames as the column_names:
-list.source_file <- paste("FA/subj", as.character(1:nsubj), sep="") 
+list.source_file <- paste("FA/subj", as.character(1:nsubj), ".nii.gz", sep="") 
 hdf5r::h5attr(thescalar.grp[["values"]], "column_names") <- list.source_file
 
 h5$close_all()

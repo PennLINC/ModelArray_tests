@@ -205,21 +205,27 @@ if (nsubj==30) {
                    paste0(&quot;n&quot;, toString(nsubj), &quot;_voxels.h5&quot;))
 }
 
-fn.csv &lt;- gsub(&quot;.h5&quot;, &quot;.csv&quot;, fn.h5)</code></pre>
+fn.csv &lt;- gsub(&quot;.h5&quot;, &quot;.csv&quot;, fn.h5)
+fn.expectedResults &lt;- gsub(&quot;.h5&quot;, &quot;_expectedResults.txt&quot;, fn.h5)</code></pre>
 <pre class="r"><code># whether there are sufficient subjects; if so = 1, if not = NA
 list.index.voxel.insufficient &lt;- c()
+list.results &lt;- rep(NULL, nvoxels)
 for (i in 1:length(list.num.valid.subj)) {
   num.valid.subjects &lt;- list.num.valid.subj[i]
   if ((num.valid.subjects &gt; num.subj.lthr.abs) &amp; (num.valid.subjects &gt; num.subj.lthr.rel * nsubj)) {   # both are &quot;greater than&quot; &quot;&gt;&quot;
-    
+    list.results[i] &lt;- 1
   } else {
     list.index.voxel.insufficient &lt;- c(list.index.voxel.insufficient,
                                        i)
+    list.results[i] &lt;- 0
   }
 }
 list.index.voxel.insufficient</code></pre>
 <pre><code>##  [1]  1  2  3  4  5  6  7  8  9 10 12 13 14 15 16 50 51 52 53 54 55 56 57 58 59
 ## [26] 60</code></pre>
+<pre class="r"><code># save list.results:
+list.results &lt;- data.frame(flag_sufficient_subj = list.results)
+write.table(list.results, file=fn.expectedResults, sep=&quot;,&quot;, row.names=FALSE, col.names=TRUE, quote = FALSE)  </code></pre>
 <pre class="r"><code>list.age &lt;- runif(nsubj, min = 10, max = 20)
 df.csv &lt;- data.frame(subjid =  paste(&quot;subj&quot;, as.character(1:nsubj), sep=&quot;&quot;),
                      age = list.age, 
@@ -229,9 +235,10 @@ df.csv &lt;- data.frame(subjid =  paste(&quot;subj&quot;, as.character(1:nsubj),
                      source_mask_file = paste(&quot;FA/subj&quot;, as.character(1:nsubj), &quot;_mask.nii.gz&quot;, sep=&quot;&quot;))
 write.table(df.csv, file=fn.csv, sep=&quot;,&quot;, row.names=FALSE, col.names=TRUE, quote = FALSE)  </code></pre>
 <pre class="r"><code>if (file.exists(fn.h5)) {
-  unlink(fn.h5)   # remove existing one
-}
-h5 &lt;- hdf5r::H5File$new(fn.h5, mode=&quot;a&quot;)</code></pre>
+  file.remove(fn.h5)   # remove existing one
+}</code></pre>
+<pre><code>## [1] TRUE</code></pre>
+<pre class="r"><code>h5 &lt;- hdf5r::H5File$new(fn.h5, mode=&quot;a&quot;)</code></pre>
 <pre class="r"><code>voxels &lt;- cbind(0:(nvoxels-1),   # voxel_id, starting from 0
                 rep(5, nvoxels),   # assume it&#39;s on the same x slice
                 rep(1:10, nvoxels/10),    # 1,2,....10, 1,2,...10,...
@@ -277,7 +284,7 @@ thescalar.grp[[&quot;values&quot;]] &lt;- scalar_mat
 
 
 # add source filenames as the column_names:
-list.source_file &lt;- paste(&quot;FA/subj&quot;, as.character(1:nsubj), sep=&quot;&quot;) 
+list.source_file &lt;- paste(&quot;FA/subj&quot;, as.character(1:nsubj), &quot;.nii.gz&quot;, sep=&quot;&quot;) 
 hdf5r::h5attr(thescalar.grp[[&quot;values&quot;]], &quot;column_names&quot;) &lt;- list.source_file
 
 h5$close_all()
