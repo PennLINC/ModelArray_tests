@@ -55,7 +55,13 @@
 
 * code: pncNback_compare.py
 * run on Chenying's local computer vmware
-
+* result: compared matched stats for parentEdu: 
+    * below is before updating ConVoxel:
+        * tstat's max absolute difference = 5.36788172134095e-07
+        * beta estimation (coefficient)'s max absolute difference = 3.4550028349400463e-07
+    * below is after updating ConVoxel --> volume data data type to float32, though seems did not change much:
+        * tstat max abs diff = 4.76837158203125e-07
+        * beta estimation max abs diff = 4.76837158203125e-07
 
 ## Use singularity image to replicate the results
 * singularity image: chenyingzhao/modelarray_confixel:test0.0.0
@@ -96,7 +102,7 @@ For the following steps:
 ### Comparison with ground truth FSL:
 * code: pncNback_compare.py
 * note: remember to change the variables folder_main and folder_modelarray
-* compared matched stats for parentEdu:
+* compared matched stats for parentEdu: (below is before updating ConVoxel --> volume data data type to float32, though probably won't affect much)
     * tstat max abs diff = 5.367881747986303e-07
     * beta estimation max abs diff = 3.455002861585399e-07
 * also visually compared for envSES (tstat and beta estimation) - consistent in several random sampled voxels at least to 4th decimal digits
