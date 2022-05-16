@@ -1,0 +1,43 @@
+### Install R (>=4.1.2)
+There are several ways to install R. Here we show how to install it in this conda environment.
+
+```console
+# activate the conda environment we previously created it
+foo@bar:~$ conda activate modelarray
+foo@bar:~$ conda config --add channels conda-forge
+foo@bar:~$ conda config --set channel_priority strict
+foo@bar:~$ conda search r-base   # will print all available r-base versions to install, you should see r-base 4.1.2
+
+# install R
+foo@bar:~$ conda install -c conda-forge r-base=4.1.2
+
+# check if R has been successfully installed:
+foo@bar:~$ which R  # where the R is installed, should be something like: /home/<username>/<mini>conda3/envs/modelarray/bin/R
+foo@bar:~$ R    # launch R, and the printed message should begin with: "R version 4.1.2"
+```
+
+### Install RStudio
+If you already have RStudio installed on the system, you can run it with:
+```console
+foo@bar:~$ conda activate modelarray   # again, make sure you have activated the correct conda environment
+foo@bar:~$ rstudio
+```
+After the RStudio has been launched, confirm that the future R libraries will be saved into this conda environment:
+```{r, echo=FALSE}
+.libPaths()
+```
+You should see a path similar to: /home/<username>/<mini>conda3/envs/modelarray/lib/R/library
+
+If you haven't got RStudio installed, you can simply install it via:
+```console
+foo@bar:~$ conda activate modelarray   # again, make sure you have activated the correct conda environment
+foo@bar:~$ conda install -c r rstudio
+```
+^^^ TRY IT OUT!!!
+
+  - notes: if using R in conda env and have trouble installing dependent R packages - try install with conda
+
+
+
+### Launch RStudio:
+* You can launch RStudio \* If you installed xxx in conda: XXXXXXXXX \* If ModelArray was not installed in conda environment, you can simply open RStudio \* Some clusters may not provide good graphic access to RStudio and it may be hard to install R packages. In this case, you may use the container we provide. You can start an R session by: `singularity run --cleanenv ${modelarray_singularity} R`. For details please see `vignette("a01_installations")` page.
