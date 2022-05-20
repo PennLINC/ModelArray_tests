@@ -45,7 +45,12 @@ nsubj <- nrow(phenotypes)
 #' Details:
 #' this won't include p-value corrections - as corrections depend on other calculated fixels; to check p-value corrections, directly calculate in the testthat tests.
 calcu_stat_lm <- function(formula, data, i_element, ...){
-  onemodel <- lm(formula = formula, data = data, ...)
+  
+  arguments_lm <- list(...)
+  arguments_lm$formula <- formula
+  arguments_lm$data <- data
+ 
+  onemodel <- do.call(stats::lm, arguments_lm)   # explicitly passing arguments into lm, to avoid error of argument "weights"
   
   onemodel.tidy <- onemodel %>% broom::tidy()
   onemodel.glance <- onemodel %>% broom::glance()
@@ -83,6 +88,12 @@ calcu_stat_lm <- function(formula, data, i_element, ...){
 ```
 
 ```{r func for gam, echo=FALSE}
+calcu_stat_gam <- function(formula, data, i_element = idx.fixel.gam, ...) {
+  
+}
+
+
+
 ```
 
 ## generate expected results for lm
@@ -114,6 +125,36 @@ expected.results[[thename]] <- dfout
 thename <- "age_sex"
 formula <- FD ~ age + sex
 dfout <- calcu_stat_lm(formula, data, idx.fixel.lm)
+expected.results[[thename]] <- dfout
+
+thename <- "age_factorA"
+formula <- FD ~ age + factorA
+dfout <- calcu_stat_lm(formula, data, idx.fixel.lm)
+expected.results[[thename]] <- dfout
+
+thename <- "age_factorB"
+formula <- FD ~ age + factorB
+dfout <- calcu_stat_lm(formula, data, idx.fixel.lm)
+expected.results[[thename]] <- dfout
+
+# phenotypes with NA:
+phenotypes_wNA <- phenotypes
+phenotypes_wNA$age[1] <- NA
+data_wNA <- phenotypes_wNA
+data_wNA$FD <- fd.simu
+
+thename <- "age_phenotypeswNA_na.action-na.omit"
+formula <- FD ~ age
+dfout <- calcu_stat_lm(formula, data_wNA, idx.fixel.lm, 
+                       na.action = "na.omit")
+expected.results[[thename]] <- dfout
+
+# weights in lm() is different:
+weights.random <- abs(rnorm(nrow(phenotypes)))
+thename <- "age_weights-random"
+formula <- FD ~ age
+dfout <- calcu_stat_lm(formula, data, idx.fixel.lm, 
+                       weights = weights.random)
 expected.results[[thename]] <- dfout
 
 
