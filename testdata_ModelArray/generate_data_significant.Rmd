@@ -1,0 +1,98 @@
+---
+title: "generate data with significant results"
+author: "Chenying Zhao"
+output: html_document
+---
+
+This is to generate data for CircleCI test - with significant statistical results. 
+
+```{r set up, include=FALSE}
+rm(list=ls())
+
+library(mgcv)
+library(testthat)
+library(dplyr)
+library(rhdf5)
+library(ggplot2)
+
+folder.modelarray <- "../../ModelArray"
+folder.modelarray.data <- file.path(folder.modelarray, "inst/extdata")
+
+fn.phenotypes <- file.path(folder.modelarray.data, "n50_cohort.csv")
+fn.h5 <- file.path(folder.modelarray.data, "n50_fixels.h5")
+
+set.seed(5)
+
+# first fixel for this model (min = 1)
+idx.fixel.lm <- 1 
+idx.fixel.gam <- 11
+```
+
+```{r load data, include=FALSE}
+phenotypes <- read.csv(fn.phenotypes)
+
+nsubj <- nrow(phenotypes)
+
+#modelarray <- ModelArray(fn.h5, "FD")
+
+```
+
+## Simulate data with significant results with age, and inject into h5 file
+### Simulate for lm: signigificant age & sex effects
+```{r simulate lm data, echo=FALSE}
+list.age <- phenotypes$age
+# generate simulated data: age --> z trans to 0-1 --> times 100 --> add noise --> if M, +10
+# z transform to 0-1: zi = (xi – min(x)) / (max(x) – min(x))
+fd.simu <- (list.age - min(list.age)) / (max(list.age) - min(list.age))
+fd.simu <- fd.simu * 100
+fd.simu <- fd.simu + rnorm(nsubj, mean=20, sd=10)
+for (i in 1:nsubj) {
+  if (phenotypes$sex[i] == "M") {
+    fd.simu[i] <- fd.simu[i] + 10
+  }
+}
+expect_gt(min(fd.simu), 0)
+hist(fd.simu)
+
+# plot:
+data <- phenotypes
+data$FD <- fd.simu
+mylm <- lm(data = data, formula = FD ~ age + sex)
+mylm %>% summary()
+
+fig.age <- ggplot(data,aes(age, FD)) +
+  geom_point() +
+  geom_smooth(method='lm', formula = y~x)
+fig.age
+
+fig.sex <- ggplot(data, aes(y=FD, x=sex)) + 
+    geom_bar(position="dodge", stat="identity")
+fig.sex
+
+# inject into h5
+h5write(fd.simu, 
+        file=fn.h5,
+        name="scalars/FD/values", 
+        index=list(idx.fixel.lm,NULL))
+
+h5closeAll()
+
+# check out:
+h5f <- rhdf5::H5Fopen(fn.h5)
+h5d <- h5f$scalars$FD$values  # enter the dataset
+expect_equal(h5d[idx.fixel.lm,],
+             fd.simu,
+             tolerance=2e-6)   # seems the writing precision is not well...
+
+h5closeAll()
+
+
+# save the actual data: 
+# ^^ this is optional, as this .txt will be different with the values saved into the .h5 (see above), so making the results a bit off too. Therefore not to use this .txt
+# fn.tosave <- paste0("data/n50_fixels_FD_idx-", toString(idx.fixel.lm), ".txt")
+# write.csv(fd.simu, fn.tosave, row.names = FALSE)   # column name will be "x"; cannot without any column name..
+
+```
+
+```{r simulate gam data, echo=FALSE}
+```

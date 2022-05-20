@@ -1,0 +1,121 @@
+---
+title: "calculate expected statistical results"
+author: "Chenying Zhao"
+output: html_document
+---
+
+This is to calculate expected statistical results but without using ModelArray.
+
+```{r setup, include=FALSE}
+rm(list=ls())
+
+library(mgcv)
+library(testthat)
+library(dplyr)
+library(rhdf5)
+library(ggplot2)
+library(broom)
+
+folder.modelarray <- "../../ModelArray"
+folder.modelarray.data <- file.path(folder.modelarray, "inst/extdata")
+
+fn.phenotypes <- file.path(folder.modelarray.data, "n50_cohort.csv")
+fn.h5 <- file.path(folder.modelarray.data, "n50_fixels.h5")
+
+# filenames for saving the expected results:  # note: RData files can store multiple R objects.
+fn.lm.results <- file.path(folder.modelarray.data, "n50_fixels_lm_expectedResults.RData")  
+
+
+set.seed(5)
+
+# first fixel for this model (min = 1)
+idx.fixel.lm <- 1 
+idx.fixel.gam <- 11
+```
+
+```{r load data, include=FALSE}
+phenotypes <- read.csv(fn.phenotypes)
+
+nsubj <- nrow(phenotypes)
+```
+
+
+## Functions for calculating the expected results
+```{r func for lm, echo=FALSE}
+#' Details:
+#' this won't include p-value corrections - as corrections depend on other calculated fixels; to check p-value corrections, directly calculate in the testthat tests.
+calcu_stat_lm <- function(formula, data, i_element, ...){
+  onemodel <- lm(formula = formula, data = data, ...)
+  
+  onemodel.tidy <- onemodel %>% broom::tidy()
+  onemodel.glance <- onemodel %>% broom::glance()
+  
+  # adjust:
+  onemodel.tidy$term[onemodel.tidy$term == "(Intercept)"] <- "Intercept"  # change the term name from "(Intercept)" to "Intercept"
+  onemodel.glance <- onemodel.glance %>% mutate(term="model")   # add a column 
+  
+  # list of column names to keep:
+  var.terms <- colnames(onemodel.tidy)
+  var.terms <- var.terms[var.terms != "term"];   # remove "term" which is not a valid stat output
+  
+  var.model <- colnames(onemodel.glance)
+  var.model <- var.model[var.model != "term"];   # remove "term" which is not a valid stat output
+  
+  # turn into one row:
+  onemodel.tidy.onerow <- onemodel.tidy %>% tidyr::pivot_wider(names_from = term,
+                                                                   values_from = all_of(var.terms),
+                                                                   names_glue = "{term}.{.value}")
+  onemodel.glance.onerow <- onemodel.glance %>%  tidyr::pivot_wider(names_from = term, 
+                                                                        values_from = all_of(var.model),
+                                                                        names_glue = "{term}.{.value}")
+  
+  onemodel.onerow <- dplyr::bind_cols(onemodel.tidy.onerow, onemodel.glance.onerow)
+  
+  # add a column of element ids:
+  colnames.temp <- colnames(onemodel.onerow)
+  onemodel.onerow <- onemodel.onerow %>% tibble::add_column(element_id = i_element-1, .before = colnames.temp[1])   # add as the first column
+    
+  # change from tibble to a data.frame:
+  onemodel.onerow <- onemodel.onerow %>% as.data.frame()  
+
+  onemodel.onerow
+}
+```
+
+```{r func for gam, echo=FALSE}
+```
+
+## generate expected results for lm
+```{r, echo=FALSE}
+expected.results <- list()
+
+# load data for lm:
+# not to load from .txt - as it'll be off with that in .h5 (2e-6), making results a little off too (e.g. <2e-6), so cannot tell if the results are perfectly matched or not
+# fd.simu <- read.csv(paste0("data/n50_fixels_FD_idx-", toString(idx.fixel.lm), ".txt"))
+# fd.simu <- fd.simu$x
+
+h5f <- rhdf5::H5Fopen(fn.h5)
+h5d <- h5f$scalars$FD$values  # enter the dataset
+
+fd.simu <- h5d[idx.fixel.lm,]
+  
+h5closeAll()
+
+
+data <- phenotypes
+data$FD <- fd.simu
+
+# different scenario:
+thename <- "age"
+formula <- FD ~ age
+dfout <- calcu_stat_lm(formula, data, idx.fixel.lm)
+expected.results[[thename]] <- dfout
+
+thename <- "age_sex"
+formula <- FD ~ age + sex
+dfout <- calcu_stat_lm(formula, data, idx.fixel.lm)
+expected.results[[thename]] <- dfout
+
+
+save(expected.results, file = fn.lm.results)
+```
