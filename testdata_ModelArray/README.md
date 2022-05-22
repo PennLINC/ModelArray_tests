@@ -5,7 +5,7 @@ This is to test that the ModelArray's results are as expected. We simulated sign
 * generate significant data and inject into .h5 file:
     * [generate_data_significant.Rmd](generate_data_significant.Rmd)
 * calculate expected statistical results but without using ModelArray:
-    * 
+    * [expected_results.Rmd](expected_results.Rmd)
 
 ## data for testing NaN etc:
 
