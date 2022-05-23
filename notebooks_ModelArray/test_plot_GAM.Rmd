@@ -63,7 +63,7 @@ Baum_plot <- function(gamModel, xvar, xlabel = NULL, ylabel = NULL) {
 ```
 
 
-My understanding of Bart Larsen's code for plotting GAM: in the case of smooth term only (without interaction term):
+My understanding of Bart Larsen's code for plotting GAM: in the case of smooth term only (without interaction term): we will only use the chunk on and after line 281 "No interaction variable, just produce a single line plot".
 
 * scatter plot: use original data from `themodel$model`
 * fitted plot + confidence interval: predicts with data:
@@ -102,9 +102,15 @@ onemodel <- results$onemodel
 ```
 
 
-Because this formula only includes smooth term, but there is no interaction term, for Bart's code, we will only use the chunk on and after line 281 "No interaction variable, just produce a single line plot".
 
 
 ```{r}
 baumplot <- Baum_plot(onemodel, "Age", "Age (years)","FDC")
 ```
+
+Next steps: to extract 
+
+* the plotted scatter dots
+* fitted lines + confidence intervals
+
+to compare...
