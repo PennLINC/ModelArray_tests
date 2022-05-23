@@ -24,7 +24,7 @@ fn.h5 <- file.path(folder.modelarray.data, "n50_fixels.h5")
 
 # filenames for saving the expected results:  # note: RData files can store multiple R objects.
 fn.lm.results <- file.path(folder.modelarray.data, "n50_fixels_lm_expectedResults.RData")  
-
+fn.gam.results <- file.path(folder.modelarray.data, "n50_fixels_gam_expectedResults.RData")  
 
 set.seed(5)
 

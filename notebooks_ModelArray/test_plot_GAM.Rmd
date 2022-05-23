@@ -1,0 +1,110 @@
+---
+title: "plotting GAM"
+author: "Chenying Zhao"
+output: html_document
+---
+
+This is to test out different methods for plotting GAM
+
+* Bart's GAMM_plotting.R
+* Graham Baum's [tutorial](https://github.com/PennBBL/tutorials/wiki/GAM-Syntax-and-Visualization) and [code](https://github.com/PennBBL/tutorials/blob/master/code/gam/GAM_tutorial.R)
+
+```{r set up}
+rm(list=ls())
+
+require(ggplot2)
+require(mgcv)
+library(visreg)   # Graham's code
+```
+
+
+```{r Graham Baum's code for GAM plotting}
+# this is copied from: https://github.com/PennBBL/tutorials/blob/master/code/gam/GAM_tutorial.R
+# modified so that it behaves as a function
+# comments were added by Chenying
+
+#' @param xvar A character, variable name to be plotted on x-axis
+Baum_plot <- function(gamModel, xvar, xlabel = NULL, ylabel = NULL) {
+  
+  # see: https://pbreheny.github.io/visreg/reference/visreg.html
+  plotdata <- visreg(gamModel, xvar,
+                     data = gamModel$model,     # original Baum's code does not have this; have to add it to avoid error
+                     type = "conditional",  # If 'conditional' is selected, the plot returned shows the value of the variable on the x-axis and the change in response on the y-axis, holding all other variables constant (by default, median for numeric variables and most common category for factors). 
+                     scale = "linear",  # ?????
+                     plot = FALSE)
+  
+  smooths <- data.frame(Variable = plotdata$meta$x, 
+                        x=plotdata$fit[[plotdata$meta$x]], 
+                        smooth=plotdata$fit$visregFit, 
+                        lower=plotdata$fit$visregLwr, 
+                        upper=plotdata$fit$visregUpr)
+  predicts <- data.frame(Variable = "dim1", 
+                         x=plotdata$res[[xvar]],
+                         y=plotdata$res$visregRes)
+  
+  theplot <- ggplot() +
+    geom_point(data = predicts, aes(x, y), colour = "darksalmon", alpha=0.7, size = 1.6 ) +
+    geom_line(data = smooths, aes(x = x, y = smooth), colour = "midnightblue",size=2) +
+    geom_line(data = smooths, aes(x = x, y=lower), linetype="dashed", colour = "midnightblue", alpha = 0.9, size = 0.9) + 
+    geom_line(data = smooths, aes(x = x, y=upper), linetype="dashed",colour = "midnightblue", alpha = 0.9, size = 0.9) +
+    theme(legend.position = "none") +
+    labs(x = xlabel, y = ylabel) +
+    theme(axis.title.x = element_text(size = rel(1.6))) +
+    theme(axis.title.y = element_text(size = rel(1.6))) + 
+    theme(axis.text = element_text(size = rel(1.4))) + theme(axis.line = element_line(colour = 'black', size = 1.5), axis.ticks.length = unit(.25, "cm")) +
+    theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank())
+  
+  #dev.off()
+
+  # return
+  theplot
+}
+
+```
+
+
+My understanding of Bart Larsen's code for plotting GAM: in the case of smooth term only (without interaction term):
+
+* scatter plot: use original data from `themodel$model`
+* fitted plot + confidence interval: predicts with data:
+  * number of data = np = 10,000 (default)
+  * x axis (i.e. smooth term age): sample out np data within [min, max] of age
+  * other covariates: 
+    * for numeric: use median value (for numeric)
+    * for factors or ordered: use the levels(df[,thisVar])[[1]], which my understanding is the reference level (i.e. the level #1)
+  * y axis: predicted with above data + the input model
+
+For my case, as sex is numeric (1 or 2), it will take median but it will be a integer 2 (number of female is more than male)
+
+```{r Bart's code for plotting GAM}
+source("../../ModelArray_paper/notebooks/GAMM_plotting.R")   # get `visualize_model()`
+```
+
+We load some data for testing - this data is for ModelArray paper figure 5B. How this data was generated: run `analyze_signi_cluster.Rmd` from ModelArray_paper repo with settings:
+
+* ModelArray_commitSHA = "0911c4ffbcc737ea9a615f7a663f57bb0b4e174d" 
+* input h5 file: ltn_FDC_n938_wResults_nfixels-0_20220109-183909.h5
+* threshold: s_Age.p.value < 1e-15
+* formula <- FDC ~ s(Age, k=4, fx=TRUE) + sex + dti64MeanRelRMS
+* method.gam.refit <- "REML" 
+
+then save it with:
+`save(results, file = "/home/chenying/Desktop/fixel_project/data/data_from_josiane/results/ltn_FDC_n938_wResults_nfixels-0_20220109-183909_forPlottingCluster.RData")`
+
+```{r load data}
+fn.rdata <- "/home/chenying/Desktop/fixel_project/data/data_from_josiane/results/ltn_FDC_n938_wResults_nfixels-0_20220109-183909_forPlottingCluster.RData"
+
+load(fn.rdata)  # variable: results
+# results$f: the figure from Bart's code
+# results$onemodel: the fitted model for this averaged FDC from this cluster
+
+onemodel <- results$onemodel
+```
+
+
+Because this formula only includes smooth term, but there is no interaction term, for Bart's code, we will only use the chunk on and after line 281 "No interaction variable, just produce a single line plot".
+
+
+```{r}
+baumplot <- Baum_plot(onemodel, "Age", "Age (years)","FDC")
+```
