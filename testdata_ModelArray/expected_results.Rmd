@@ -429,39 +429,9 @@ formula <- FD ~ ti(age, fx=TRUE) + ti(factorB, fx=TRUE)+ factorA
 dfout <- calcu_stat_gam(formula, data, idx.fixel.gam)
 expected.results[[thename]] <- dfout
 
-
-
-### try to replicate the process (data wrangling) again here, as onemodel.* could be empty tibble (although now `calcu_stat_gam()` is as robust as ModelArray's functions):
-thename <- "intercept"
+thename <- "intercept"   # not to replicate the process here.... otherwise dfout's class is "tbl_df"...
 formula <- FD ~ 1
-themodel <- mgcv::gam(formula = formula, data = data)
-# there is empty tidy()
-themodel.tidy.parametricTerms <- themodel %>% tidy(parametric = TRUE)
-themodel.tidy.parametricTerms$term[themodel.tidy.parametricTerms$term == "(Intercept)"] <- "Intercept"
-themodel.glance <- themodel %>% glance()
-themodel.summary <- themodel %>% summary()
-themodel.glance[["adj.r.squared"]] <- themodel.summary$r.sq
-themodel.glance[["model.dev.expl"]] <- themodel.summary$dev.expl
-themodel.glance[["model.sp.criterion"]] <- themodel.summary$sp.criterion[["GCV.Cp"]]
-themodel.glance[["model.scale"]] <- themodel.summary$scale
-              
-var.parametricTerms <- colnames(themodel.tidy.parametricTerms)
-var.parametricTerms <- var.parametricTerms[var.parametricTerms != "term"]
-
-var.model <- colnames(themodel.glance)
-themodel.glance <- themodel.glance %>% mutate(term = "model") 
-  
-themodel.tidy.parametricTerms.onerow <- themodel.tidy.parametricTerms %>% tidyr::pivot_wider(names_from = term,
-                                                                                            values_from = all_of(var.parametricTerms),
-                                                                                            names_glue = "{term}.{.value}")
-    
-themodel.glance.onerow <- themodel.glance %>%  tidyr::pivot_wider(names_from = term, 
-                                                                    values_from = all_of(var.model),
-                                                                    names_glue = "{term}.{.value}")
-dfout <- dplyr::bind_cols(themodel.tidy.parametricTerms.onerow, themodel.glance.onerow)
-dfout <- dfout %>% mutate(element_id = idx.fixel.gam - 1,
-                          .before = Intercept.estimate)
-dfout <- as_tibble(dfout)
+dfout <- calcu_stat_gam(formula, data, idx.fixel.gam)
 expected.results[[thename]] <- dfout
 
 
