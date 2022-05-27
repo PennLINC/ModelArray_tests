@@ -4,9 +4,7 @@ author: "Chenying Zhao"
 output: html_document
 ---
 
-This is to calculate expected statistical results but without using ModelArray.
-
-Limitations: although models are fitted in this script without using ModelArray, the data re-organization into one row + renaming the column names + some stat (e.g AIC) etc still depends on several packages (including dplyr, tidyr, broom), and those parts are copied from ModelArray.
+This is to calculate expected statistical results but without using ModelArray (e.g. ModelArray(), ModelArray.lm() or ModelArray.gam()).
 
 ```{r setup, include=FALSE}
 rm(list=ls())
