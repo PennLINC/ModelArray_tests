@@ -25,7 +25,7 @@ This is the README file on tests on memory benchmarking.
 * Main points:
     * getting `child_id_list_wn` by: `pgrep -P ${parent_id}`
     * `$ readarray -t child_id_list <<<"$child_id_list_wn"`    # remove "\n"
-    * #The first string's length and use this is determine whether there is really a child process:
+    * then get the first string in this array:
     * `$ child_id_list_element0=${child_id_list[0]}`
     * Now:
 
@@ -34,7 +34,7 @@ This is the README file on tests on memory benchmarking.
 | length of child_id_list  | `${#child_id_list[@]}`    | 0       | 1 (i.e., there is something hidden but not real) | 4 |
 | length of the first string in child_id_list | `${#child_id_list_element0}`   | 0        | 0 | e.g., 5 (just because the pid is 5-digit) |
 
-This table tells us that length of child_id_list `${#child_id_list[@]}` is not accurate if there is no actual child process. Better use length of the first string in child_id_list `${#child_id_list_element0}` 
+This table tells us that length of child_id_list `${#child_id_list[@]}` is not accurate if there is no actual child process. Better use length of the first string in child_id_list `${#child_id_list_element0}` to determine whether there is really a child process, i.e. if >0, then there is child process.
 
 ## The theory
 [MRtrix fixelcfestats](https://mrtrix.readthedocs.io/en/latest/reference/commands/fixelcfestats.html) says if `nthreads` is not 0, it's a "multi-threaded applications".
