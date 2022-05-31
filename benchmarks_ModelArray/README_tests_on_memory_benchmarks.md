@@ -44,3 +44,21 @@ Based on multi-threads def: https://www.backblaze.com/blog/whats-the-diff-progra
 A thread is the unit of execution within a process. A process can have anywhere from just one thread to many threads.
 
 ^^^ therefore, multi-threads should only use one process and not expect child process
+
+## The source code and developer's doc for multi-threading in MRtrix:
+* [developer's doc for multi-threading](https://www.mrtrix.org/developer-documentation/multithreading.html)
+    * This implies that multi-threading applications in MRtrix leverages multiple CPU cores;
+    * Also multi-threading can define the data that's shared across threads, and data that's private to each thread
+
+* fixelcfestats:
+    * [mrtrix3/cmd/fixelcfestats.cpp](https://github.com/MRtrix3/mrtrix3/blob/master/cmd/fixelcfestats.cpp)
+* permutation:
+    * [mrtrix3/src/stats/permtest.h](https://github.com/MRtrix3/mrtrix3/blob/master/src/stats/permtest.h)
+    * [mrtrix3/src/stats/permtest.cpp](https://github.com/MRtrix3/mrtrix3/blob/master/src/stats/permtest.cpp)
+* multi-thread:
+    * [mrtrix3/core/thread.h](https://github.com/MRtrix3/mrtrix3/blob/master/core/thread.h)
+    * [mrtrix3/core/thread.cpp](https://github.com/MRtrix3/mrtrix3/blob/master/core/thread.cpp)
+
+
+Other code that might be related:
+ * [mrtrix3/src/fixel/matrix.cpp](https://github.com/MRtrix3/mrtrix3/blob/master/src/fixel/matrix.cpp)
