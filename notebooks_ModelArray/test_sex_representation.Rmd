@@ -1,0 +1,67 @@
+---
+title: "Does representation of sex affect the statistical results?"
+author: "Chenying Zhao"
+output: html_document
+---
+
+This is to test how different representation of sex affects the statistical results. For example, using 1/2 vs using M/F.
+
+## GAM, without interaction term
+```{r}
+rm(list=ls())
+library(dplyr)   # %>%
+library(mgcv)
+```
+
+Create fake data where:
+
+* column `random` is from 1 and 2
+* column `randomMF` is male or female, not ordered
+* column `ordered_random` is male or female, with female as reference level
+  * reference: https://bart-larsen.github.io/GAMM-Tutorial/
+
+```{r}
+rm(list=ls())
+fn.csv.test <- "../../ModelArray/inst/extdata/n50_cohort.csv"
+# this `phenotypes` is a fake data only for test purpose!
+phenotypes <- read.csv(fn.csv.test)
+
+# sex in 1 vs 2 (M vs. F):
+phenotypes$random <- c(rep(1,25),rep(2,25))
+# sex in m vs f:
+phenotypes$randomMF <- c(rep("male",25),rep("female",25))
+# sex in m vs f, ordered, f as reference group:
+phenotypes$ordered_randomMF <- ordered(phenotypes$randomMF, levels = c("female","male"))
+
+head(phenotypes)
+```
+
+```{r}
+mygam <- mgcv::gam(data=phenotypes, formula=age~factorB + random)
+mygam_mf <- mgcv::gam(data=phenotypes, formula = age ~ factorB + randomMF)
+mygam_mf_ordered <- mgcv::gam(data=phenotypes, formula = age ~ factorB + ordered_randomMF)
+
+message("GAM with 1 and 2 for sex:")
+mygam %>% summary()
+
+message("GAM with m and f for sex:")
+mygam_mf %>% summary()
+
+message("GAM with ordered male/female for sex, with female as ref group:")
+mygam_mf_ordered %>% summary()
+```
+
+
+Therefore, Using 1/2 or M/F or ordered M/F, GAM models:
+
+* For term sex:
+  * p-value: same
+  * t value: absolute value is the same, but can be flipped (with DIFFERENT sign), depending on which group is referenced
+  * estimate, std.error: DIFFERENT between ordered vs not ordered!
+* For terms other than sex and intercept, e.g., factorB here:
+  * same
+* For model's stat (displayed in `summary()`):
+  * same
+* For term Intercept:
+  * DIFFERENT!
+

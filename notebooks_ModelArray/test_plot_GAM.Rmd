@@ -6,6 +6,7 @@ output: html_document
 
 This is to test out different methods for plotting GAM
 
+## Bart's vs Graham's
 * Bart's GAMM_plotting.R
 * Graham Baum's [tutorial](https://github.com/PennBBL/tutorials/wiki/GAM-Syntax-and-Visualization) and [code](https://github.com/PennBBL/tutorials/blob/master/code/gam/GAM_tutorial.R)
 
