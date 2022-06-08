@@ -16,10 +16,11 @@ rm(list=ls())
 require(ggplot2)
 require(mgcv)
 library(visreg)   # Graham's code
+library(dplyr)  # %>%
 ```
 
 
-```{r Graham Baum's code for GAM plotting}
+```{r Graham Baum code for GAM plotting}
 # this is copied from: https://github.com/PennBBL/tutorials/blob/master/code/gam/GAM_tutorial.R
 # modified so that it behaves as a function
 # comments were added by Chenying
@@ -77,7 +78,7 @@ My understanding of Bart Larsen's code for plotting GAM: in the case of smooth t
 
 For my case, as sex is numeric (1 or 2), it will take median but it will be a integer 2 (number of female is more than male)
 
-```{r Bart's code for plotting GAM}
+```{r Bart code for plotting GAM}
 source("../../ModelArray_paper/notebooks/GAMM_plotting.R")   # get `visualize_model()`
 ```
 
@@ -95,11 +96,23 @@ then save it with:
 ```{r load data}
 fn.rdata <- "/home/chenying/Desktop/fixel_project/data/data_from_josiane/results/ltn_FDC_n938_wResults_nfixels-0_20220109-183909_forPlottingCluster.RData"
 
-load(fn.rdata)  # variable: results
+load(fn.rdata)  # variable: results + df_avgFixel
 # results$f: the figure from Bart's code
 # results$onemodel: the fitted model for this averaged FDC from this cluster
+# results$pred: the data for drawing the fitted line + se boundaries
+# df_avgFixel: the original data
 
 onemodel <- results$onemodel
+pred_avgFixel <- results$pred
+
+# a little bit information about the fitted line:
+message("the value used for plotting fitted line:")
+message(paste0("sex = ", unique(pred_avgFixel$sex) %>% toString()))
+message(paste0("motion = ", unique(pred_avgFixel$dti64MeanRelRMS) %>% toString() ))
+
+if ((unique(pred_avgFixel$dti64MeanRelRMS)) == (df_avgFixel$dti64MeanRelRMS %>% median())) {
+  message("which is the median value of motion in the original data")
+}
 ```
 
 
