@@ -4,6 +4,8 @@ author: "Chenying Zhao"
 output: html_document
 ---
 
+THIS RMD FILE IS NO LONGER USED. SEE README.TXT FILE IN THE CURRENT FOLDER FOR MORE.
+
 This is to calculate expected statistical results but without using ModelArray (e.g. ModelArray(), ModelArray.lm() or ModelArray.gam()).
 
 ```{r setup, include=FALSE}
