@@ -1,0 +1,56 @@
+# This is the Docker file for base image for ModelArray + ConFixel's docker image
+# When update this Dockerfile, please update:
+# 1. ModelArray's dependent R packages - see DESCRIPTION file
+# 2. tag of `pennbbl/qsiprep-mrtrix3:<tag>`
+# 3. rocker/verse:<R_version>
+
+
+# ConFixel requires `mrconvert` from MRtrix3:
+FROM pennbbl/qsiprep-mrtrix3:22.1.0 as build_mrtrix3
+    # ^^ pennbbl/qsiprep-mrtrix3:22.1.0: uses MRtrix SHA = 3498ff4, commited Jul 16, 2021
+    # https://github.com/MRtrix3/mrtrix3/commit/3498ff469b843d5b023c3675f1d955ba4105c5d1
+
+## Base image https://hub.docker.com/u/rocker/
+FROM rocker/verse:4.1.2
+
+## MRtrix3
+COPY --from=build_mrtrix3 /opt/mrtrix3-latest /opt/mrtrix3-latest
+ENV PATH="$PATH:/opt/mrtrix3-latest/bin" \
+    MRTRIX3_DEPS="bzip2 ca-certificates curl libpng16-16 libblas3 liblapack3 libtiff5"
+
+## Install libraries
+# ref: .circleci/config.yml from ModelArray:
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libhdf5-dev \
+    texlive-fonts-recommended \
+    git \
+    ${MRTRIX3_DEPS}
+
+# Install python: # ref: https://github.com/PennLINC/flaudit/blob/master/Dockerfile#L23
+RUN apt-get update && apt-get install -y python3-pip python3-dev
+
+## Install dependent R packages:
+# from CRAN:   # removed base packages from the list (otherwise warning in docker build): methods and parallel
+RUN install2.r --error --ncpus -4 \
+    matrixStats \
+    magrittr \
+    dplyr \
+    tidyr \
+    tibble \
+    stringr \
+    glue \
+    doParallel \
+    hdf5r \
+    mgcv \
+    rlang \
+    broom \
+    pbmcapply \
+    pbapply \
+    crayon
+
+# from Bioc: # first, install BiocManager from CRAN:
+RUN install2.r --error BiocManager
+RUN R -e 'BiocManager::install("HDF5Array")'
+    # ^^ this step takes a long time - around 30-40min...
+RUN R -e 'BiocManager::install("rhdf5")'
+RUN R -e 'BiocManager::install("DelayedArray")'
