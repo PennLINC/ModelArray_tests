@@ -15,7 +15,8 @@ filename_dockerfile="Dockerfile_build"
 docker build -t pennlinc/modelarray_build:${docker_tag} \
     -f ${filename_dockerfile} .
     # ^^ this will take 30-40min
-
+# TODO: next time: try out `cache-from` and `--rm=false` - see ModelArray repo's circle ci
+    # might save time?
 
 ## Test:
 # mrconvert
@@ -35,3 +36,4 @@ docker buildx build --platform linux/amd64,linux/arm64 \
     -f ${filename_dockerfile} .
 
     # this will take 1h+ on a Mac M1 laptop (~double time of only `docker build` one architecture)
+    # see above some tryouts to save time?
