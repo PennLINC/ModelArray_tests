@@ -7,7 +7,7 @@ docker_tag="unstable"
 
 folder_data_demo="/Users/chenyzh/Desktop/Research/Satterthwaite_Lab/fixel_project/data/data_demo"
 folder_data_demo_cubic="/cbica/projects/fixel_db/dropbox/data_demo"
-mounted_dir="/mnt/testdir"
+mounted_dir="/mnt/mydata"
 
 folder_sif_cubic="/cbica/projects/fixel_db/software/singularity_images"
 # ++++++++++++++++++++++++++++++++++++++++++++++++++++
