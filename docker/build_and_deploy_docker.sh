@@ -47,7 +47,7 @@ docker push pennlinc/modelarray_confixel:${docker_tag}
 
 ## Test on CUBIC:
 # run in ${folder_sif_cubic}:
-singularity pull docker://pennlinc/modelarray_confixel:unstable
+singularity pull docker://pennlinc/modelarray_confixel:${docker_tag}
 # run in ${folder_data_demo_cubic}:
 singularity run --cleanenv \
     ${folder_sif_cubic}/modelarray_confixel_${docker_tag}.sif \

@@ -8,3 +8,8 @@
 * build & deploy: [build_and_deploy_docker.sh](build_and_deploy_docker.sh)
     * current version: see CircleCI of ModelArray GitHub repo
     * under trying and on roadmap: multi-arch build: [multiarch_build_docker](multiarch_build_docker)
+
+## Write the doc for how to use Docker image
+* in folder `docs_for_docker`
+* Run on CUBIC cluster:
+    * setups: [setups_cubic.sh](setups_cubic.sh)
