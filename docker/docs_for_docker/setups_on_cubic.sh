@@ -9,8 +9,11 @@ docker_tag_underscore="unstable"    # a tagged version: change dot to underscore
 fn_singularity="${dir_singularity}/modelarray_confixel_${docker_tag_underscore}.sif"   # filename of singularity image with full path
 filename_Rscript="run_ModelArray.R"
 
-dir_data="/cbica/projects/fixel_db/dropbox/data_demo"   # where the data is downloaded and unzipped
-dir_mounted_data="/mnt/mydata"   # the mounted directory within singularity image
+dir_project="/cbica/projects/fixel_db/dropbox/data_demo/myProject"
+dir_mounted_project="/mnt/myProject"
+dir_data="${dir_project}/data"   # where the data is downloaded and unzipped
+dir_mounted_data="/mnt/data"   # the mounted directory within singularity image
+dir_code="${dir_project}/code"
 # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 cd ${dir_singularity}
@@ -42,12 +45,12 @@ singularity run --cleanenv -B ${dir_data}:${dir_mounted_data} \
 
 # first, overwrite the h5 file with the raw data without results:
 cp demo_FDC_n100_backup.h5 demo_FDC_n100.h5
+    # if `ls -l`, the file size should be `278880272`
 
 # below is JUST to test out. See `call_ModelArray.sh` for most updated version!!
-# run in `$dir_data`
-singularity run --cleanenv -B ${dir_data}:${dir_mounted_data} \
+# run in `$dir_code`
+singularity run --cleanenv -B ${dir_project}:${dir_mounted_project} \
     ${fn_singularity} \
     Rscript ./${filename_Rscript} \
     > printed_message.txt 2>&1
 
-# full run: -j 1804499

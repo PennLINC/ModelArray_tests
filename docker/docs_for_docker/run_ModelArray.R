@@ -7,7 +7,7 @@ library(ModelArray)
 # Define input filenames
 # =======================================
 # the mounted data directory in singularity container:
-dir_mounted_data <- "/mnt/mydata"
+dir_mounted_data <- "/mnt/myProject/data"
 # filename of example fixel data (.h5 file):
 h5_path <- file.path(dir_mounted_data, "demo_FDC_n100.h5")
 # filename of example fixel data (.h5 file):
