@@ -7,16 +7,16 @@
 ## Test out building & deploying ModelArray + ConFixel's docker image
 * build & deploy: [build_and_deploy_docker.sh](build_and_deploy_docker.sh)
     * current version: see CircleCI of ModelArray GitHub repo
-    * under trying and on roadmap: multi-arch build: [multiarch_build_docker](multiarch_build_docker)
+    * under trying and on roadmap: multi-arch build: [multiarch_build_docker.sh](multiarch_build_docker.sh)
 
 ## Write the doc for how to use Docker image and test out the scripts
 * in folder `docs_for_docker`
 * Run on CUBIC cluster:
-    * setups (code except running ModelArray): [setups_cubic.sh](setups_cubic.sh)
+    * setups (code except running ModelArray): [setups_on_cubic.sh](docs_for_docker/setups_on_cubic.sh)
     * run ModelArray:
-        * R script: [run_ModelArray.R](run_ModelArray.R)
-        * bash script to call this R script: [call_ModelArray.sh](call_ModelArray.sh)
-        * qsub the job: [qsub_call_ModelArray.sh](qsub_call_ModelArray.sh)
+        * R script: [run_ModelArray.R](docs_for_docker/run_ModelArray.R)
+        * bash script to call this R script: [call_ModelArray.sh](docs_for_docker/call_ModelArray.sh)
+        * qsub the job: [qsub_call_ModelArray.sh](docs_for_docker/qsub_call_ModelArray.sh)
 
 The folder structure on cubic:
 ```{console}
