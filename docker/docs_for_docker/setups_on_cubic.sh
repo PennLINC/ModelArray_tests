@@ -54,3 +54,24 @@ singularity run --cleanenv -B ${dir_project}:${dir_mounted_project} \
     Rscript ./${filename_Rscript} \
     > printed_message.txt 2>&1
 
+# confirmed: first 6 fixels, intercept.estimate and model.p.value: consistent with results in `Example Walkthrough`
+# > modelarray <- ModelArray("demo_FDC_n100_withLmResults.h5", "FDC", "results_lm")
+# > results(modelarray)$results_lm$results_matrix[1:6, ]
+
+
+# ConFixel: hdf5 --> mif:
+cd ${dir_data}   # `dir_data` cannot start with `~`; otherwise cannot `cd`
+singularity run --cleanenv -B ${dir_data}:${dir_mounted_data} \
+    ${fn_singularity} \
+    fixelstats_write \
+    --index-file FDC/index.mif \
+    --directions-file FDC/directions.mif \
+    --cohort-file cohort_FDC_n100.csv \
+    --relative-root ${dir_mounted_data} \
+    --analysis-name results_lm \
+    --input-hdf5 demo_FDC_n100.h5 \
+    --output-dir results_lm
+
+    #--input-hdf5 demo_FDC_withLmResults.h5 \
+
+# have compared with the image in `example walkthrough` - the same

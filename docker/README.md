@@ -45,9 +45,13 @@ The folder structure on cubic:
 * Details:
     * `qacct -j 1804502`, took 1h40min, using 4 CPUs, on compute node
     * formula: `FDC ~ Age + sex + dti64MeanRelRMS`
-    * maximal virtual memory (maxvmem)      2.653GB
-    * mem is probably = the integral of mem * time
-        * cpu          23562.082s
-        * mem          12.822TBs
-        * so I guess the max mem should be 12.822 * 1024 / (23562.082/4) = 2.229 GB
-            * `/4` means there are 4 CPUs, and times of all cpus are added up
+    * highest instance memory use during the execution of the job (maxvmem)      2.653GB
+    * mem = the integral of mem * time; according to cubic's manual, "is not useful in specifying memory requirements"
+    * I requested `h_vmem=30G`
+    * printed message: `printed_message_fullrun_hvmem-30G.txt`
+    * results: `demo_FDC_n100_withLmResults.h5`
+
+* later tested with `h_vmem=10G` (jobID = 1810504, 10/3/22)
+    * `maxvmem` is very close to above job
+    * printed message: `printed_message_fullrun_hvmem-10G.txt`
+    * results: `demo_FDC_n100_withLmResults_hvmem-10G.h5`

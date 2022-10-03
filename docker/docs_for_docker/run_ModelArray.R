@@ -8,9 +8,9 @@ library(ModelArray)
 # =======================================
 # the mounted data directory in singularity container:
 dir_mounted_data <- "/mnt/myProject/data"
-# filename of example fixel data (.h5 file):
+# filename of example fixel-wise data (.h5 file):
 h5_path <- file.path(dir_mounted_data, "demo_FDC_n100.h5")
-# filename of example fixel data (.h5 file):
+# filename of example fixel-wise data (.h5 file):
 csv_path <- file.path(dir_mounted_data, "cohort_FDC_n100.csv")
 
 # =======================================
