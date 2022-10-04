@@ -1,0 +1,96 @@
+---
+title: "Author credits generator"
+output: html_document
+---
+
+This Rmd is to generate the text of author credits from an xlsx file.
+
+```{r setups}
+rm(list=ls())
+
+library(readxl)
+library(officer)
+library(dplyr)    # %>%
+library(testthat)
+```
+
+```{r inputs}
+# ++++++++++++++++++++++++++++++++++++++++++++++++
+folder <- "/Users/chenyzh/Library/CloudStorage/OneDrive-PennO365/Research/SatterthwaiteLab/fixel_project/paper/revision1"
+n_authors <- 18
+date_xlsx <- "ongoing"
+tag_docx <- "temp"
+
+fn_xlsx <- file.path(folder, 
+                     paste0("author_credit_ModelArray_", date_xlsx, ".xlsx"))
+fn_docx <- file.path(folder, 
+                     paste0("author_credit_ModelArray_", tag_docx, ".docx"))
+# ++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+```
+
+```{r process information}
+t <- read_excel(fn_xlsx)
+t <- t[1:n_authors, ]   # only keep headline (already goes to title of `t`) + all authors' rows
+expect_equal(t$name[nrow(t)],   # last row's author name
+             "Ted")
+expect_equal(colnames(t)[1],
+             "index")
+expect_equal(colnames(t)[2],
+             "name")
+
+# fields
+list.fields <- colnames(t)[3:length(colnames(t))]
+expect_equal(list.fields %>% length(),
+             14)
+expect_equal(list.fields[1], "Conceptualization")
+expect_equal(list.fields[length(list.fields)], "Funding acquisition")
+
+# generate all the text
+txt <- ""
+for (i in 1:n_authors) {
+  author_name <- t$name[i]
+  
+  if (i > 1) {
+    txt <- paste0(txt, ". ")   # add a period for the previous author
+  }
+  
+  txt <- paste0(txt, t$name[i], ": ")
+  flag_author <- FALSE
+
+  
+  for (fieldname in list.fields) {
+    if (is.na(t[[fieldname]][i])) {
+      # skip
+    } else if (t[[fieldname]][i] == "X") {   # this field is chosen for this author
+      if (flag_author == FALSE) {
+        flag_author <- TRUE
+      } else {
+        txt <- paste0(txt, ", ")   # add a comma
+      }
+      
+      txt <- paste0(txt, fieldname)
+
+    } else {
+      warning(paste0("Not NA, not X in ", author_name, "'s field ", fieldname))
+    }
+    
+  }
+
+}
+txt <- paste0(txt, ". ")   # add a period for the previous author
+#print(txt)
+
+
+```
+
+TODO: 
+* change to full name (notice Joelle's accent!)
+* compare with source file - make sure there is no error
+
+```{r write into word file}
+# create a word file:
+doc <- read_docx(path = fn_docx)
+
+```
