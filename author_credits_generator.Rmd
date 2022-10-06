@@ -3,13 +3,13 @@ title: "Author credits generator"
 output: html_document
 ---
 
-This Rmd is to generate the text of author credits from an xlsx file.
+This Rmd is to generate the text of author credits from an xlsx file. Right now it will print out the text, and you need to copy the text into a word document and manually bold author names.
 
 ```{r setups}
 rm(list=ls())
 
 library(readxl)
-library(officer)
+#library(officer)
 library(dplyr)    # %>%
 library(testthat)
 ```
@@ -18,13 +18,13 @@ library(testthat)
 # ++++++++++++++++++++++++++++++++++++++++++++++++
 folder <- "/Users/chenyzh/Library/CloudStorage/OneDrive-PennO365/Research/SatterthwaiteLab/fixel_project/paper/revision1"
 n_authors <- 18
-date_xlsx <- "ongoing"
-tag_docx <- "temp"
+date_xlsx <- "20221005"
+#tag_docx <- "temp"
 
 fn_xlsx <- file.path(folder, 
                      paste0("author_credit_ModelArray_", date_xlsx, ".xlsx"))
-fn_docx <- file.path(folder, 
-                     paste0("author_credit_ModelArray_", tag_docx, ".docx"))
+# fn_docx <- file.path(folder, 
+#                      paste0("author_credit_ModelArray_", tag_docx, ".docx"))
 # ++++++++++++++++++++++++++++++++++++++++++++++++
 
 
@@ -34,7 +34,7 @@ fn_docx <- file.path(folder,
 t <- read_excel(fn_xlsx)
 t <- t[1:n_authors, ]   # only keep headline (already goes to title of `t`) + all authors' rows
 expect_equal(t$name[nrow(t)],   # last row's author name
-             "Ted")
+             "Theodore D. Satterthwaite")
 expect_equal(colnames(t)[1],
              "index")
 expect_equal(colnames(t)[2],
@@ -80,7 +80,7 @@ for (i in 1:n_authors) {
 
 }
 txt <- paste0(txt, ". ")   # add a period for the previous author
-#print(txt)
+print(txt)
 
 
 ```
@@ -91,6 +91,6 @@ TODO:
 
 ```{r write into word file}
 # create a word file:
-doc <- read_docx(path = fn_docx)
+#doc <- read_docx(path = fn_docx)
 
 ```
