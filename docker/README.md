@@ -55,3 +55,12 @@ The folder structure on cubic:
     * `maxvmem` is very close to above job
     * printed message: `printed_message_fullrun_hvmem-10G.txt`
     * results: `demo_FDC_n100_withLmResults_hvmem-10G.h5`
+
+## Test out ConVoxel in this Docker image
+* ConVoxel --> .h5: [test_ConVoxel_2h5_inDocker.sh](test_ConVoxel_2h5_inDocker.sh)
+* ConVoxel --> NIfTI: [test_ConVoxel_2nifti_inDocker.sh](test_ConVoxel_2nifti_inDocker.sh)
+
+Tested with toy voxel-wise data in ConFixel repo. Got the same results as that from directly using python ConFixel.
+
+Note: If running on Mac M1, can run thru + get the same output file, but will receive warning:
+> WARNING: The requested image's platform (linux/amd64) does not match the detected host platform (linux/arm64/v8) and no specific platform was requested
