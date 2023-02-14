@@ -85,12 +85,11 @@ def get_mask(fn_nifti):
     return mask_data
 
 
-def generate_group_mask(num_voxel_onedim, dist2center_thr, band_thickness):
+def generate_mask_basedOnDist(num_voxel_onedim, dist2center_thr):
     """
-    This is to generate a group mask.
-    The center of the image (a ball) will be 1, where voxels have distance
-    to the center of the image <= `dist2center_thr` + `band_thickness`
-    Elsewhere, value = 0
+    This is to generate a mask based on the voxel distance to the center.
+    Voxels with distance to center <= `dist2center_thr` will have value = 1;
+    Elsewhere, value = 0.
 
     Parameters:
     ------------
@@ -108,7 +107,7 @@ def generate_group_mask(num_voxel_onedim, dist2center_thr, band_thickness):
                     math.pow(j-i_voxel_center, 2) +
                     math.pow(k-i_voxel_center, 2)
                 )
-                if dist2center <= dist2center_thr + band_thickness:
+                if dist2center <= dist2center_thr:
                     # assign 1:
                     fake_group_mask_data[i, j, k] = 1
     return fake_group_mask_data
@@ -125,7 +124,7 @@ def main():
 
     metric_name = "FA"
     folder_main = op.join("/Users/chenyzh/Desktop/Research/Satterthwaite_Lab/"
-                          "fixel_project/data/data_voxel_toy")
+                          "fixel_project/ConFixel/tests/data_voxel_toy")
     folder_metric = op.join(folder_main, metric_name)
     folder_mask = op.join(folder_main, "individual_masks")
     # +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -138,12 +137,21 @@ def main():
         os.makedirs(folder_mask)
 
     # generate group mask:
-    group_mask_data = generate_group_mask(
-        num_voxel_onedim, dist2center_thr, band_thickness)
+    group_mask_data = generate_mask_basedOnDist(
+        num_voxel_onedim, dist2center_thr+band_thickness)
     fn_group_mask_nifti = op.join(folder_main,
                                   "group_mask_" + metric_name + ".nii.gz")
     group_mask_nifti = nb.Nifti1Image(group_mask_data, affine)
     group_mask_nifti.to_filename(fn_group_mask_nifti)
+
+    # generate another mask:
+    #   voxels within the mask have values from all the subjects:
+    core_mask_data = generate_mask_basedOnDist(
+        num_voxel_onedim, dist2center_thr)   # only `dist2center_thr`
+    fn_core_mask_nifti = op.join(folder_main,
+                                 "core_mask_" + metric_name + ".nii.gz")
+    core_mask_nifti = nb.Nifti1Image(core_mask_data, affine)
+    core_mask_nifti.to_filename(fn_core_mask_nifti)
 
     for i_sub in range(0, num_total_subject):
         sub_id = "{:02d}".format(i_sub + 1)    # 2 char

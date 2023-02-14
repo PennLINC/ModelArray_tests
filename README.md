@@ -1,5 +1,5 @@
 # ModelArray_tests
-Tests for ModelArray + ConFixel
+Tests for [ModelArray](https://github.com/PennLINC/ModelArray) + [ConFixel](https://github.com/PennLINC/ConFixel)
 
 ## For ModelArray
 ### Docker image of ModelArray + ConFixel
@@ -24,6 +24,11 @@ Tests for ModelArray + ConFixel
     * test-utils.R: is for testing utils.R in ModelArray_paper repo/notebooks
 
 ## For Converters (ConFixel, ConVoxel, etc)
+### Test data for ConFixel software
+* [testdata_ConFixel](testdata_ConFixel)
+    * Currently including test data preparation for ConVoxel
+
+### Other scripts
 * [notebooks_conversion](notebooks_conversion)
     * some of the scripts are out-dated
 

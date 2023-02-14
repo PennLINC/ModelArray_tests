@@ -1,0 +1,41 @@
+---
+title: "Apply ModelArray to toy voxel-wise data"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+rm(list=ls())
+
+library(ModelArray)
+```
+
+```{r inputs}
+main.folder <- "/Users/chenyzh/Desktop/Research/Satterthwaite_Lab/fixel_project/ConFixel/tests/data_voxel_toy"
+fn.h5 <- file.path(main.folder, "FA.h5")
+fn.csv <- file.path(main.folder, "cohort_FA.csv")
+fn.h5.output <- file.path(main.folder, "FA_wResults.h5")
+scalar_name <- "FA"
+
+phenotypes <- read.csv(fn.csv)
+
+if (fn.h5 != fn.h5.output) {
+  file.copy(from=fn.h5, to=fn.h5.output, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)   # , recursive = TRUE
+}
+```
+
+```{r define ModelArray-class object}
+modelarray <- ModelArray(fn.h5, scalar_types = c(scalar_name))
+modelarray
+
+scalars(modelarray)[["FA"]]
+```
+
+```{r run ModelArray}
+formula.lm <- FA ~ age + sex
+mylm <- ModelArray.lm(formula.lm, modelarray, phenotypes, scalar_name,
+                      var.model = c("adj.r.squared", "p.value", "nobs"))
+```
+
+```{r}
+writeResults(fn.h5.output, df.output = mylm, analysis_name = "results_lm")
+```
