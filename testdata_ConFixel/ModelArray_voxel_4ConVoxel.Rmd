@@ -17,6 +17,7 @@ fn.h5.output <- file.path(main.folder, "FA_wResults.h5")
 scalar_name <- "FA"
 
 phenotypes <- read.csv(fn.csv)
+# phenotypes["random"] <- sample(1:10, nrow(phenotypes), replace=T)   # for testing
 
 if (fn.h5 != fn.h5.output) {
   file.copy(from=fn.h5, to=fn.h5.output, overwrite = TRUE, copy.mode = TRUE, copy.date = TRUE)   # , recursive = TRUE
@@ -32,6 +33,8 @@ scalars(modelarray)[["FA"]]
 
 ```{r run ModelArray}
 formula.lm <- FA ~ age + sex
+# formula.lm <- FA ~ age + sex + random   # for testing
+
 mylm <- ModelArray.lm(formula.lm, modelarray, phenotypes, scalar_name,
                       var.model = c("adj.r.squared", "p.value", "nobs"))
 ```
