@@ -1,4 +1,6 @@
-# original location: `ConFixel/confixel/notebooks/`
+# Notes:
+#   Original location: `ConFixel/confixel/notebooks/`;
+#   Need to add necessary arguments in `.vscode/launch.json`;
 
 import os
 import os.path as op
@@ -8,4 +10,4 @@ sys.path.append(os.path.join(os.path.dirname(
     os.path.dirname(os.path.abspath(__file__))), "confixel"))
 from confixel.fixels import main   # noqa
 
-main()
+main()   # calling confixel (mif -> hdf5)
